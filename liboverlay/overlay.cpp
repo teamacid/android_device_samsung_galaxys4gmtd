@@ -1331,7 +1331,7 @@ int overlay_dequeueBuffer(struct overlay_data_device_t *dev,
 
 int overlay_queueBuffer(struct overlay_data_device_t *dev,
         overlay_buffer_t buffer) {
-    struct 
+    struct overlay_data_context_t* ctx = (struct overlay_data_context_t*)dev;
     int cnt = 0;
     int rc;
 
