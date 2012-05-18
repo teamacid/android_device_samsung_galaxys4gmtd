@@ -1331,30 +1331,35 @@ int overlay_dequeueBuffer(struct overlay_data_device_t *dev,
 
 int overlay_queueBuffer(struct overlay_data_device_t *dev,
         overlay_buffer_t buffer) {
-    struct overlay_data_context_t* ctx = (struct overlay_data_context_t*)dev;
-
+    struct 
     int cnt = 0;
+    int rc;
 
     pthread_mutex_lock(&ctx->shared->lock);
     if ( ctx->shared->streamingReset ) {
         ctx->shared->streamingReset = 0;
-        pthread_mutex_unlock(&ctx->shared->lock);
-        return ALL_BUFFERS_FLUSHED;
+        rc = ALL_BUFFERS_FLUSHED;
+        goto end;
     }
-    pthread_mutex_unlock(&ctx->shared->lock);
 
     /* Catch the case where the data side had no need to set the crop window */
     if (!ctx->shared->dataReady) {
         ctx->shared->dataReady = 1;
-        enable_streaming(ctx->shared, ctx->ctl_fd);
+        enable_streaming_locked(ctx->shared, ctx->ctl_fd);
     }
-
-    if (!ctx->shared->controlReady) return -1;
-    int rc = v4l2_overlay_q_buf( ctx->ctl_fd, (int)buffer, (int) ctx->zerocopy );
+    
+    if (!ctx->shared->controlReady) {
+        rc = -1;
+        goto end;
+    }
+    
+    rc = v4l2_overlay_q_buf( ctx->ctl_fd, (int)buffer, (int) ctx->zerocopy );
     if (rc == 0 && ctx->qd_buf_count < ctx->num_buffers) {
         ctx->qd_buf_count ++;
     }
-
+    
+    end:
+    pthread_mutex_unlock(&ctx->shared->lock);
     return rc;
 }
 
