@@ -28,7 +28,7 @@
 #if SUPPORT_1080P
 #define MMAP_BUFFER_SIZE_MMAP          (70*1024*1024)
 #else
-#define MMAP_BUFFER_SIZE_MMAP          (62*1024*1024)
+#define MMAP_BUFFER_SIZE_MMAP          (62*512*1024)
 #endif
 
 #define S5PC110_MFC_DEV_NAME           "/dev/s3c-mfc"
