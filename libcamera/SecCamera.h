@@ -74,28 +74,28 @@ namespace android {
 #define JOIN_AGAIN(x, y) x ## y
 
 #define FRONT_CAM VGA
-#define BACK_CAM S5K4ECGX
+#define BACK_CAM CE147
 
 #if !defined (FRONT_CAM) || !defined(BACK_CAM)
 #error "Please define the Camera module"
 #endif
 
-#define S5K4ECGX_PREVIEW_WIDTH            1280
-#define S5K4ECGX_PREVIEW_HEIGHT           720
-#define S5K4ECGX_SNAPSHOT_WIDTH           2560
-#define S5K4ECGX_SNAPSHOT_HEIGHT          1920
+#define CE147_PREVIEW_WIDTH            1280
+#define CE147_PREVIEW_HEIGHT           720
+#define CE147_SNAPSHOT_WIDTH           2560
+#define CE147_SNAPSHOT_HEIGHT          1920
 
-#define S5K4ECGX_POSTVIEW_WIDTH           640
-#define S5K4ECGX_POSTVIEW_WIDE_WIDTH      800
-#define S5K4ECGX_POSTVIEW_HEIGHT          480
-#define S5K4ECGX_POSTVIEW_BPP             16
+#define CE147_POSTVIEW_WIDTH           640
+#define CE147_POSTVIEW_WIDE_WIDTH      800
+#define CE147_POSTVIEW_HEIGHT          480
+#define CE147_POSTVIEW_BPP             16
 
-#define S5K4ECGX_THUMBNAIL_WIDTH          320
-#define S5K4ECGX_THUMBNAIL_HEIGHT         240
-#define S5K4ECGX_THUMBNAIL_BPP            16
+#define CE147_THUMBNAIL_WIDTH          320
+#define CE147_THUMBNAIL_HEIGHT         240
+#define CE147_THUMBNAIL_BPP            16
 
 /* focal length of 3.43mm */
-#define S5K4ECGX_FOCAL_LENGTH             343
+#define CE147_FOCAL_LENGTH             343
 
 #define VGA_PREVIEW_WIDTH               640
 #define VGA_PREVIEW_HEIGHT              480
