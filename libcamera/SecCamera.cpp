@@ -546,6 +546,8 @@ static int fimc_v4l2_s_parm(int fp, struct v4l2_streamparm *streamparm)
 SecCamera::SecCamera() :
             m_flag_init(0),
             m_camera_id(CAMERA_ID_BACK),
+            m_cam_fd(-1),
+            m_cam_fd2(-1),
             m_preview_v4lformat(V4L2_PIX_FMT_NV21),
             m_preview_width      (0),
             m_preview_height     (0),
@@ -1000,6 +1002,10 @@ int SecCamera::startRecord(void)
 	
 	if (m_camera_id == CAMERA_ID_BACK) {
 	    // Some properties for back camera video recording
+	    setISO(ISO_MOVIE);
+        setMetering(METERING_MATRIX);
+        setBatchReflection();
+	    
     	ret = fimc_v4l2_s_fmt(m_cam_fd2, m_recording_width,
                               m_recording_height, V4L2_PIX_FMT_NV12T, 0);
     } else {
@@ -1657,7 +1663,7 @@ int SecCamera::getSnapshotAndJpeg(unsigned char *yuv_buf, unsigned char *jpeg_bu
     memcpy(pInBuf, yuv_buf, snapshot_size);
 
     setExifChangedAttribute();
-    jpgEnc.encode(output_size, &mExifInfo);
+    jpgEnc.encode(output_size, NULL);
 
     uint64_t outbuf_size;
     unsigned char *pOutBuf = (unsigned char *)jpgEnc.getOutBuf(&outbuf_size);
@@ -2894,9 +2900,7 @@ int SecCamera::setDataLineCheck(int chk_dataline)
         return -1;
     }
 
-    if (m_chk_dataline != chk_dataline) {
-        m_chk_dataline = chk_dataline;
-    }
+    m_chk_dataline = chk_dataline;
 
     return 0;
 }
@@ -3284,7 +3288,7 @@ status_t SecCamera::dump(int fd, const Vector<String16> &args)
 }
 
 double SecCamera::jpeg_ratio = 0.7;
-int SecCamera::interleaveDataSize = 4261248;
+int SecCamera::interleaveDataSize = 5242880;
 int SecCamera::jpegLineLength = 636;
 
 }; // namespace android

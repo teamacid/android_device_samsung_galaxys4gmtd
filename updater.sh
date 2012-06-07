@@ -39,13 +39,15 @@ if /tmp/busybox test -e /dev/block/bml7 ; then
     fi
 
     # create a backup of efs
-    if /tmp/busybox test -e /mnt/sdcard/backup/efs ; then
-        /tmp/busybox mv /mnt/sdcard/backup/efs /mnt/sdcard/backup/efs-$$
+    if /tmp/busybox test -e /mnt/sdcard/backup/efs.tar ; then
+        /tmp/busybox mv /mnt/sdcard/backup/efs.tar /mnt/sdcard/backup/efs-$$.tar
     fi
-    /tmp/busybox rm -rf /mnt/sdcard/backup/efs
+    /tmp/busybox rm -rf /mnt/sdcard/backup/efs.tar
+
+    /tmp/busybox mkdir -p /mnt/sdcard/backup
     
-    /tmp/busybox mkdir -p /mnt/sdcard/backup/efs
-    /tmp/busybox cp -R /efs/ /mnt/sdcard/backup
+    cd /efs
+    /tmp/busybox tar cf /mnt/sdcard/backup/efs.tar *
 
     # write the package path to sdcard cyanogenmod.cfg
     if /tmp/busybox test -n "$UPDATE_PACKAGE" ; then
@@ -76,7 +78,7 @@ elif /tmp/busybox test -e /dev/block/mtdblock0 ; then
         /tmp/busybox umount -l /dev/block/mmcblk0p1
         if ! /tmp/busybox mount -t vfat /dev/block/mmcblk0p1 /sdcard ; then
             /tmp/busybox echo "Cannot mount sdcard."
-            exit 4
+            exit 4  
         fi
     fi
 
@@ -140,7 +142,7 @@ elif /tmp/busybox test -e /dev/block/mtdblock0 ; then
     /tmp/erase_image datadata
 
     # restore efs backup
-    if /tmp/busybox test -e /sdcard/backup/efs/nv_data.bin ; then
+    if /tmp/busybox test -e /sdcard/backup/efs.tar ; then
         /tmp/busybox umount -l /efs
         /tmp/erase_image efs
         /tmp/busybox mkdir -p /efs
@@ -152,7 +154,8 @@ elif /tmp/busybox test -e /dev/block/mtdblock0 ; then
             fi
         fi
 
-        /tmp/busybox cp -R /sdcard/backup/efs /
+        cd /efs
+        tar xf /sdcard/efs-backup.tar
         /tmp/busybox umount -l /efs
     else
         /tmp/busybox echo "Cannot restore efs."
@@ -165,4 +168,3 @@ elif /tmp/busybox test -e /dev/block/mtdblock0 ; then
 
     exit 0
 fi
-

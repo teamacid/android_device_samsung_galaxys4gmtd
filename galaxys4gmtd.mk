@@ -116,6 +116,7 @@ PRODUCT_PACKAGES += \
 
 # Libs
 PRODUCT_PACKAGES += \
+    libs3cjpeg \
     libcamera \
     libstagefrighthw
 
