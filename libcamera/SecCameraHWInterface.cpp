@@ -1269,6 +1269,12 @@ status_t CameraHardwareSec::setParameters(const CameraParameters& params)
     const char *new_str_preview_format = params.getPreviewFormat();
     LOGV("%s : new_preview_width x new_preview_height = %dx%d, format = %s",
          __func__, new_preview_width, new_preview_height, new_str_preview_format);
+         
+    if (strcmp(new_str_preview_format, CameraParameters::PIXEL_FORMAT_YUV420SP) &&
+        strcmp(new_str_preview_format, CameraParameters::PIXEL_FORMAT_YUV420P)) {
+        LOGE("Unsupported preview color format: %s", new_str_preview_format);
+        return BAD_VALUE;
+    }
 
     if (0 < new_preview_width && 0 < new_preview_height &&
             new_str_preview_format != NULL &&
@@ -1321,6 +1327,7 @@ status_t CameraHardwareSec::setParameters(const CameraParameters& params)
     params.getPictureSize(&new_picture_width, &new_picture_height);
     LOGV("%s : new_picture_width x new_picture_height = %dx%d", __func__, new_picture_width, new_picture_height);
     if (0 < new_picture_width && 0 < new_picture_height) {
+        LOGV("%s: setSnapshotSize", __func__);
         if (mSecCamera->setSnapshotSize(new_picture_width, new_picture_height) < 0) {
             LOGE("ERR(%s):Fail on mSecCamera->setSnapshotSize(width(%d), height(%d))",
                     __func__, new_picture_width, new_picture_height);
@@ -1495,7 +1502,9 @@ status_t CameraHardwareSec::setParameters(const CameraParameters& params)
         ret = UNKNOWN_ERROR;
     }
 
-    if (new_scene_mode_str != NULL) {
+    const char *new_focus_mode_str = params.get(CameraParameters::KEY_FOCUS_MODE);
+
+    if (mSecCamera->getCameraId() == SecCamera::CAMERA_ID_BACK) {
         int  new_scene_mode = -1;
 #ifdef HAVE_FLASH
         const char *new_flash_mode_str = params.get(CameraParameters::KEY_FLASH_MODE);
@@ -1561,20 +1570,6 @@ status_t CameraHardwareSec::setParameters(const CameraParameters& params)
                 LOGE("%s::unmatched scene_mode(%s)",
                         __func__, new_scene_mode_str); //action, night-portrait, theatre, steadyphoto
                 ret = UNKNOWN_ERROR;
-            }
-        }
-        
-		// zoom
-        int new_zoom = params.getInt(CameraParameters::KEY_ZOOM);
-        int max_zoom = params.getInt(CameraParameters::KEY_MAX_ZOOM);
-        LOGV("%s : new_zoom %d", __func__, new_zoom);
-        if (0 <= new_zoom && new_zoom <= max_zoom) {
-            LOGV("%s : set zoom:%d\n", __func__, new_zoom);
-            if (mSecCamera->setZoom(new_zoom) < 0) {
-                LOGE("ERR(%s):Fail on mSecCamera->setZoom(%d)", __func__, new_zoom);
-                ret = UNKNOWN_ERROR;
-            } else {
-                mParameters.set(CameraParameters::KEY_ZOOM, new_zoom);
             }
         }
         
@@ -1664,6 +1659,20 @@ status_t CameraHardwareSec::setParameters(const CameraParameters& params)
                 ret = UNKNOWN_ERROR;
             } else {
                 mParameters.set(CameraParameters::KEY_SCENE_MODE, new_scene_mode_str);
+            }
+        }
+        
+        // zoom
+        int new_zoom = params.getInt(CameraParameters::KEY_ZOOM);
+        int max_zoom = params.getInt(CameraParameters::KEY_MAX_ZOOM);
+        LOGV("%s : new_zoom %d", __func__, new_zoom);
+        if (0 <= new_zoom && new_zoom <= max_zoom) {
+            LOGV("%s : set zoom:%d\n", __func__, new_zoom);
+            if (mSecCamera->setZoom(new_zoom) < 0) {
+                LOGE("ERR(%s):Fail on mSecCamera->setZoom(%d)", __func__, new_zoom);
+                ret = UNKNOWN_ERROR;
+            } else {
+                mParameters.set(CameraParameters::KEY_ZOOM, new_zoom);
             }
         }
     }
@@ -2038,7 +2047,7 @@ static CameraInfo sCameraInfo[] = {
 #ifdef FFC_PRESENT
      {
          CAMERA_FACING_FRONT,
-         270,  /* orientation */
+         0,  /* orientation */
      }
 #endif
 };
