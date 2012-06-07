@@ -17,6 +17,11 @@
 # gpu driver for adreno200 is globally accessible
 /dev/kgsl                 0666   root       root
 
+# TV Out
+/dev/video14             0660    system      graphics
+/dev/video21             0660    system      graphics
+/dev/video22             0660    system      graphics
+
 # these should not be world writable
 /dev/diag                 0660   radio      radio
 /dev/diag_arm9            0660   radio      radio
