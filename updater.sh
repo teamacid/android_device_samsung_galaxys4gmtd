@@ -70,8 +70,10 @@ if /tmp/busybox test -e /dev/block/bml7 ; then
     # write new kernel to boot partition
     /tmp/flash_image boot /tmp/boot.img
     if [ "$?" != "0" ] ; then
+        /tmp/busybox echo "Failed to write kernel to boot partition"
         exit 3
     fi
+    /tmp/busybox echo "Successfully wrote kernel to boot partition"
     /tmp/busybox sync
 
     /sbin/reboot
@@ -118,6 +120,7 @@ elif /tmp/busybox test -e /dev/block/mtdblock0 ; then
             exit 5
 	else
             /tmp/busybox cp /tmp/modem.bin /radio/modem.bin
+	    /tmp/busybox sync
 	fi
     fi
 
@@ -127,8 +130,10 @@ elif /tmp/busybox test -e /dev/block/mtdblock0 ; then
     # if a cyanogenmod.cfg exists, then this is a first time install
     # let's format the volumes and restore radio and efs
     if ! /tmp/busybox test -e /sdcard/cyanogenmod.cfg ; then
+        /tmp/busybox echo "Updating CM7, Not formating /cache and /data, not restoring /efs"
         exit 0
     fi
+    /tmp/busybox echo "Updating from a BML rom. Format /cache and /data, and attempt to restore /efs"
 
     # flash boot image
     /tmp/erase_image boot
@@ -142,7 +147,7 @@ elif /tmp/busybox test -e /dev/block/mtdblock0 ; then
     /tmp/erase_image cache
 
     # unmount and format data
-    /tmp/busybox umount /data
+    /tmp/busybox umount -l /data
     /tmp/erase_image data
 
     # restore efs backup
@@ -175,7 +180,7 @@ elif /tmp/busybox test -e /dev/block/mtdblock0 ; then
         /tmp/busybox tar xf /sdcard/backup/efs.tar
         /tmp/busybox umount -l /efs
     else
-        /tmp/busybox echo "Cannot restore efs."
+        /tmp/busybox echo "/sdcard/backup/efs.tar does not exist. Not restoring efs."
         exit 7
     fi
 
