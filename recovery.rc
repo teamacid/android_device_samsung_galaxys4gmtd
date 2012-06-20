@@ -3,7 +3,7 @@ on early-init
 
 on init
     export PATH /sbin:/vendor/bin:/system/sbin:/system/bin:/system/xbin
-    export LD_LIBRARY_PATH /vendor/lib:/system/lib:/system/lib/egl
+    export LD_LIBRARY_PATH /sbin:/vendor/lib:/system/lib:/system/lib/egl
     export ANDROID_ROOT /system
     export ANDROID_DATA /data
     export EXTERNAL_STORAGE /sdcard
