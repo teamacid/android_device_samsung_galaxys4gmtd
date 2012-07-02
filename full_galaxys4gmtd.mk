@@ -25,6 +25,7 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/languages_full.mk)
 #$(call inherit-product, device/sample/products/backup_overlay.mk)
 $(call inherit-product, device/samsung/galaxys4gmtd/galaxys4gmtd.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/full.mk)
+$(call inherit-product, device/samsung/galaxys4gmtd/version.mk)
 
 # Screen density is actually considered a locale (since it is taken into account
 # the the build-time selection of resources). The product definitions including
