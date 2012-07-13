@@ -24,7 +24,6 @@
 #include <utils/SortedVector.h>
 
 #include <hardware_legacy/AudioHardwareBase.h>
-#include <media/mediarecorder.h>
 #include <hardware/audio_effect.h>
 
 #include "secril-client.h"
@@ -48,7 +47,7 @@ namespace android_audio_legacy {
     using android::Vector;
 
 // TODO: determine actual audio DSP and hardware latency
-// Additionnal latency introduced by audio DSP and hardware in ms
+// Additional latency introduced by audio DSP and hardware in ms
 #define AUDIO_HW_OUT_LATENCY_MS 0
 // Default audio output sample rate
 #define AUDIO_HW_OUT_SAMPLERATE 44100
@@ -57,8 +56,8 @@ namespace android_audio_legacy {
 // Default audio output sample format
 #define AUDIO_HW_OUT_FORMAT (AudioSystem::PCM_16_BIT)
 // Kernel pcm out buffer size in frames at 44.1kHz
-#define AUDIO_HW_OUT_PERIOD_SZ 1024
-#define AUDIO_HW_OUT_PERIOD_CNT 4
+#define AUDIO_HW_OUT_PERIOD_SZ 880
+#define AUDIO_HW_OUT_PERIOD_CNT 2
 // Default audio output buffer size in bytes
 #define AUDIO_HW_OUT_PERIOD_BYTES (AUDIO_HW_OUT_PERIOD_SZ * 2 * sizeof(int16_t))
 
@@ -94,9 +93,6 @@ public:
 
     virtual status_t setVoiceVolume(float volume);
     virtual status_t setMasterVolume(float volume);
-#ifdef HAVE_FM_RADIO
-    virtual status_t setFmVolume(float volume);
-#endif
 
     virtual status_t setMode(int mode);
 
@@ -127,12 +123,6 @@ public:
             const char *getVoiceRouteFromDevice(uint32_t device);
 
             status_t setIncallPath_l(uint32_t device);
-
-#ifdef HAVE_FM_RADIO
-            void enableFMRadio();
-            void disableFMRadio();
-            status_t setFMRadioPath_l(uint32_t device);
-#endif
 
             status_t setInputSource_l(audio_source source);
 
@@ -198,12 +188,6 @@ private:
     void            loadRILD(void);
     status_t        connectRILDIfRequired(void);
     struct echo_reference_itfe *mEchoReference;
-
-#ifdef HAVE_FM_RADIO
-    int             mFmFd;
-    float           mFmVolume;
-    bool            mFmResumeAfterCall;
-#endif
 
     //  trace driver operations for dump
     int             mDriverOp;
