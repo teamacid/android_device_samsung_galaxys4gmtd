@@ -84,7 +84,7 @@ PRODUCT_PACKAGES := \
     s3c-keypad.kcm
 
 # Wifi utilities
-PRODUCT_PACKAGES := \
+PRODUCT_PACKAGES += \
     dhdutil \
     fw_bcm4329.bin \
     fw_bcm4329_apsta.bin
