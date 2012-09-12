@@ -125,7 +125,7 @@ int LightSensor::readEvents(sensors_event_t* data, int count)
                 // R = 47kOhm
                 // Max adc value 4095 = 3.3V
                 // 1/4 of light reaches sensor
-                mPendingEvent.light = powf(10, event->value * (330.0f / 4095.0f / 47.0f)) * 4;
+                mPendingEvent.light = powf(10, event->value * (330.0f / 4095.0f / 47.0f)) * 8.75f;
             }
         } else if (type == EV_SYN) {
             mPendingEvent.timestamp = timevalToNano(event->time);
