@@ -25,6 +25,34 @@
 
 #include "LightSensor.h"
 
+/* From AOSP Crespo */
+   // Convert adc value to lux assuming:
+   // I = 10 * log(Ev) uA
+   // R = 47kOhm
+   // Max adc value 4095 = 3.3V
+   // 1/4 of light reaches sensor
+   // mPendingEvent.light 
+   //     = powf(10, event->value * (330.0f / 4095.0f / 47.0f)) * 4.0f;
+
+/* jmk -- "Ev" isn't right, as it is already a logarithmic measure
+ * Assume that the author meant "lux" and the component values are correct
+ * The expression given absorbs the gain of 10 into 3300 mv / 10 = 330.0f
+ *
+ * Measurement suggests that a factor of 8.75 (instead of 4)
+ * provides better agreement with what the example SGS4G was reporting,
+ * typically matching within 1/3-stop except at very low light levels
+ * 
+ * lux = 8.75 * 10^(ADC_counts*3300/10/4095/47)
+ * 
+ * Express this in equivalent form e^(coef_a*ADC_counts + coef_b)
+ * coef_a = ln(10)*3300/10/4095/47
+ * coef_b = ln(8.75)
+ */
+
+#define COEF_A 0.003948f
+#define COEF_B 2.169f
+
+
 LightSensor::LightSensor()
     : SensorBase(NULL, "light_sensor"),
       mEnabled(0),
@@ -120,12 +148,7 @@ int LightSensor::readEvents(sensors_event_t* data, int count)
         int type = event->type;
         if (type == EV_ABS) {
             if (event->code == EVENT_TYPE_LIGHT) {
-                // Convert adc value to lux assuming:
-                // I = 10 * log(Ev) uA
-                // R = 47kOhm
-                // Max adc value 4095 = 3.3V
-                // 1/4 of light reaches sensor
-                mPendingEvent.light = powf(10, event->value * (330.0f / 4095.0f / 47.0f)) * 8.75f;
+	        mPendingEvent.light = exp(COEF_A*event->value + COEF_B);
             }
         } else if (type == EV_SYN) {
             mPendingEvent.timestamp = timevalToNano(event->time);
