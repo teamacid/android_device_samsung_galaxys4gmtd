@@ -48,6 +48,7 @@
         <item>75</item>
         <item>150</item>
         <item>600</item>
+	<item>1750</item>
         <item>5000</item>
     </integer-array>
 
@@ -61,6 +62,7 @@
         <item>45</item>
         <item>64</item>
         <item>128</item>
+	<item>180</item>
         <item>255</item>
     </integer-array>
 
@@ -71,6 +73,7 @@
     <integer-array name="config_autoBrightnessButtonBacklightValues">
         <item>255</item>
         <item>255</item>
+        <item>0</item>
         <item>0</item>
         <item>0</item>
         <item>0</item>
