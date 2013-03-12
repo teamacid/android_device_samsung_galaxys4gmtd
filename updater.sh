@@ -61,6 +61,7 @@ if /tmp/busybox test -e /dev/block/bml7 ; then
 
         # Make sure that the zip file gets flashed upon reboot
         /tmp/busybox echo "install_zip(\"$PACKAGE_LOCATION\");" > /sdcard/extendedcommand
+	/tmp/busybox echo "install $PACKAGE_LOCATION" > /sdcard/openrecoveryscript
     fi
 
     # Scorch any ROM Manager settings to require the user to reflash recovery
