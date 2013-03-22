@@ -105,7 +105,7 @@ BOARD_HAS_DOWNLOAD_MODE := true
 BOARD_HAS_NO_SELECT_BUTTON := true
 BOARD_USES_BML_OVER_MTD := true
 BOARD_CUSTOM_BOOTIMG_MK := device/samsung/galaxys4gmtd/shbootimg.mk
-TARGET_RECOVERY_PRE_COMMAND := "echo 1 > /cache/.startrecovery; sync;"
+TARGET_RECOVERY_PRE_COMMAND := "echo 1 > /data/.startrecovery; sync;"
 
 TARGET_OTA_ASSERT_DEVICE := herring,galaxys4g,galaxys4gmtd,SGH-T959V,SGH-T959W
 
