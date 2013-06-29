@@ -1,7 +1,6 @@
 # mount point	fstype		device
 
 /sdcard		vfat		/dev/block/mmcblk0p1
-#/sd-ext		ext4		/dev/block/mmcblk0p2
 /system		yaffs2		system
 /cache		yaffs2		cache
 /data		yaffs2		userdata
@@ -11,5 +10,3 @@
 /boot		mtd		boot
 /radio		mtd		radio
 
-
-#/emmc		vfat		/dev/block/mmcblk1p1

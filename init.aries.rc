@@ -1,16 +1,13 @@
-import init.herring.usb.rc
+import init.aries.usb.rc
 
 on init
     loglevel 9
 
-    export EXTERNAL_STORAGE /mnt/sdcard
+    export EXTERNAL_STORAGE /storage/sdcard0
 
-    mkdir /mnt/sdcard 0000 system system
-    symlink /mnt/sdcard /sdcard
-
-    # We will create our own ril-daemon service in class 'core' because the
-    # rild doesn't like being killed. (During device encryption.)
-    stop ril-daemon
+    mkdir /storage/sdcard0 0000 root root
+    symlink /storage/sdcard0 /sdcard
+    symlink /storage/sdcard0 /mnt/sdcard
 
 on fs
     # We chown/chmod /efs because mount is run as root + defaults
@@ -132,8 +129,8 @@ on boot
     
     mount debugfs /sys/kernel/debug /sys/kernel/debug
 
-    setprop ro.build.product herring
-    setprop ro.product.device herring
+    setprop ro.build.product aries
+    setprop ro.product.device aries
     setprop ro.radio.noril yes
 
     setprop ro.crypto.keyfile.userdata /efs/userdata_footer
@@ -309,7 +306,7 @@ on boot
     chown bluetooth bluetooth /dev/uinput
     chmod 0660 /dev/uinput
 
-    chown bluetooth bluetooth /dev/s3c2410_serial0
+    chown bluetooth net_bt_stack /dev/s3c2410_serial0
     chmod 0660 /dev/s3c2410_serial0
     chmod 0770 /sys/class/rfkill/rfkill0/state
     chmod 0770 /sys/class/rfkill/rfkill1/state
@@ -319,14 +316,14 @@ on boot
     chmod 0770 /sys/class/rfkill/rfkill1/type
     chmod 0770 /sys/class/rfkill/rfkill2/type
     chmod 0770 /sys/class/rfkill/rfkill3/type
-    chown bluetooth bluetooth /sys/class/rfkill/rfkill0/state
-    chown bluetooth bluetooth /sys/class/rfkill/rfkill1/state
-    chown bluetooth bluetooth /sys/class/rfkill/rfkill2/state
-    chown bluetooth bluetooth /sys/class/rfkill/rfkill3/state
-    chown bluetooth bluetooth /sys/class/rfkill/rfkill0/type
-    chown bluetooth bluetooth /sys/class/rfkill/rfkill1/type
-    chown bluetooth bluetooth /sys/class/rfkill/rfkill2/type
-    chown bluetooth bluetooth /sys/class/rfkill/rfkill3/type
+    chown bluetooth net_bt_stack /sys/class/rfkill/rfkill0/state
+    chown bluetooth net_bt_stack /sys/class/rfkill/rfkill1/state
+    chown bluetooth net_bt_stack /sys/class/rfkill/rfkill2/state
+    chown bluetooth net_bt_stack /sys/class/rfkill/rfkill3/state
+    chown bluetooth net_bt_stack /sys/class/rfkill/rfkill0/type
+    chown bluetooth net_bt_stack /sys/class/rfkill/rfkill1/type
+    chown bluetooth net_bt_stack /sys/class/rfkill/rfkill2/type
+    chown bluetooth net_bt_stack /sys/class/rfkill/rfkill3/type
 
     # allow system to modify cpufreq control files
     chown root system /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
@@ -378,13 +375,6 @@ service gps-daemon /system/vendor/bin/gpsd -c /system/etc/gps.xml
     group gps system inet
     oneshot
 
-service new-ril-daemon /system/bin/rild
-    class core
-    socket rild stream 660 root radio
-    socket rild-debug stream 660 radio system
-    user root
-    group radio cache inet misc audio sdcard_rw log
-
 # 3D init
 service pvrsrvinit /system/vendor/bin/pvrsrvinit
     class core
@@ -398,7 +388,7 @@ service wpa_supplicant /system/bin/wpa_supplicant -W -Dwext -ieth0 -c /data/misc
     disabled
     oneshot
 
-service dhcpcd_eth0 /system/bin/dhcpcd -ABKL
+service dhcpcd_eth0 /system/bin/dhcpcd -aABDKL
     class main
     disabled
     oneshot
@@ -414,27 +404,12 @@ service bdaddr /system/bin/bdaddr_read
     disabled
     oneshot
 
-on property:init.svc.bootanim=running
+on property:ril.bt_macaddr=*
     start bdaddr
 
+# FIXME: remove this.
 on property:ro.debuggable=1
     start adbd
-
-# NOTE: lpm is disabled
-service hciattach /system/bin/brcm_patchram_plus --enable_hci \
-    --baudrate 3000000 --patchram /system/bin/BCM4329B1_002.002.023.0746.0832.hcd /dev/s3c2410_serial0
-    class main
-    user bluetooth
-    group bluetooth net_bt_admin
-    disabled
-    oneshot
-
-# bugreport is triggered by holding down volume down, volume up and power
-service bugreport /system/bin/dumpstate -d -v -o /sdcard/bugreports/bugreport
-    class main
-    disabled
-    oneshot
-    keycodes 114 115 116
 
 service tvout /system/bin/tvoutserver
     class late_start

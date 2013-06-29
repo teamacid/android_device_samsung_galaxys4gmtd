@@ -43,20 +43,19 @@ DEVICE_PACKAGE_OVERLAYS := device/samsung/galaxys4gmtd/overlay
 
 # These are the hardware-specific configuration files
 PRODUCT_COPY_FILES := \
-    device/samsung/galaxys4gmtd/prebuilt/etc/asound.conf:system/etc/asound.conf \
     device/samsung/galaxys4gmtd/prebuilt/etc/vendor/samsung-agps/secgps.conf:system/etc/vendor/samsung-agps/secgps.conf \
     device/samsung/galaxys4gmtd/prebuilt/etc/vold.fstab:system/etc/vold.fstab \
     device/samsung/galaxys4gmtd/prebuilt/etc/gps.xml:system/etc/gps.xml \
-    device/samsung/galaxys4gmtd/prebuilt/etc/egl.cfg:system/lib/egl/egl.cfg
+    device/samsung/aries-common/egl.cfg:system/lib/egl/egl.cfg
 
 # Init files
-# device/samsung/galaxys4gmtd/init.herring.rc:root/init.herring.rc
 PRODUCT_COPY_FILES += \
-    device/samsung/galaxys4gmtd/init.herring.rc:root/init.herring.rc \
-    device/samsung/galaxys4gmtd/init.herring.usb.rc:root/init.herring.usb.rc \
-    device/samsung/galaxys4gmtd/init.herring.usb.rc:recovery/root/usb.rc \
-    device/samsung/galaxys4gmtd/lpm.rc:root/lpm.rc \
-    device/samsung/galaxys4gmtd/ueventd.herring.rc:root/ueventd.herring.rc
+    device/samsung/galaxys4gmtd/init.aries.rc:root/init.aries.rc \
+    device/samsung/galaxys4gmtd/init.aries.usb.rc:root/init.aries.usb.rc \
+    device/samsung/galaxys4gmtd/init.aries.usb.rc:recovery/root/usb.rc \
+    device/samsung/galaxys4gmtd/ueventd.aries.rc:root/ueventd.aries.rc \
+    device/samsung/aries-common/lpm.rc:root/lpm.rc \
+    device/samsung/aries-common/init.recovery.aries.rc:root/init.recovery.aries.rc
 
 # Keylayout and Keychars
 PRODUCT_COPY_FILES += \
@@ -92,34 +91,36 @@ PRODUCT_PACKAGES += \
 
 # These are the OpenMAX IL configuration files
 PRODUCT_COPY_FILES += \
-    device/samsung/galaxys4gmtd/sec_mm/sec_omx/sec_omx_core/secomxregistry:system/etc/secomxregistry \
-    device/samsung/galaxys4gmtd/media_profiles.xml:system/etc/media_profiles.xml
+	hardware/samsung/exynos3/s5pc110/sec_mm/sec_omx/sec_omx_core/secomxregistry:system/etc/secomxregistry \
+	device/samsung/aries-common/media_profiles.xml:system/etc/media_profiles.xml \
+	device/samsung/aries-common/media_codecs.xml:system/etc/media_codecs.xml
 
 # These are the OpenMAX IL modules
 PRODUCT_PACKAGES += \
-    libSEC_OMX_Core.s5pc110 \
-    libOMX.SEC.AVC.Decoder.s5pc110 \
-    libOMX.SEC.M4V.Decoder.s5pc110 \
-    libOMX.SEC.M4V.Encoder.s5pc110 \
-    libOMX.SEC.AVC.Encoder.s5pc110
-
-# audio
-PRODUCT_PACKAGES += \
-    audio.primary.s5pc110 \
-    audio_policy.s5pc110
+	libSEC_OMX_Core \
+	libOMX.SEC.AVC.Decoder \
+	libOMX.SEC.M4V.Decoder \
+	libOMX.SEC.M4V.Encoder \
+	libOMX.SEC.AVC.Encoder
 
 # Misc other modules
 PRODUCT_PACKAGES += \
-    lights.s5pc110 \
-    sensors.s5pc110 \
-    audio.a2dp.default
+	lights.s5pc110 \
+	sensors.s5pc110 \
+	power.s5pc110 \
+	hwcomposer.s5pc110 \
+	camera.aries \
+	audio.primary.aries \
+	audio.a2dp.default \
+	audio.usb.default \
+	libs3cjpeg
+
+PRODUCT_COPY_FILES += \
+	device/samsung/aries-common/libaudio/audio_policy.conf:system/etc/audio_policy.conf
 
 # Libs
 PRODUCT_PACKAGES += \
-    camera.s5pc110 \
-    libs3cjpeg \
-    libstagefrighthw \
-    hwcomposer.s5pc110
+	libstagefrighthw
 
 # Bluetooth MAC Address
 PRODUCT_PACKAGES += \
@@ -170,7 +171,7 @@ PRODUCT_PROPERTY_OVERRIDES := \
 PRODUCT_PROPERTY_OVERRIDES += \
     wifi.interface=eth0 \
     wifi.supplicant_scan_interval=20 \
-    ro.telephony.ril_class=SamsungRIL \
+    ro.telephony.ril_class=SamsungExynos3RIL \
     ro.telephony.ril.v3=icccardstatus,datacall,signalstrength,facilitylock \
     mobiledata.interfaces=pdp0,gprs
 
@@ -219,6 +220,7 @@ PRODUCT_TAGS += dalvik.gc.type-precise
 include frameworks/native/build/phone-hdpi-512-dalvik-heap.mk
 
 PRODUCT_COPY_FILES += \
+    device/samsung/aries-common/bml_over_mtd.sh:bml_over_mtd.sh \
     device/samsung/galaxys4gmtd/updater.sh:updater.sh
 
 # See comment at the top of this file. This is where the other
